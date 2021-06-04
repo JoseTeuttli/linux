@@ -19,7 +19,7 @@
 #include <linux/prefetch.h>
 
 #include "hyperv_vmbus.h"
-
+#include "rust_test.h"
 #define VMBUS_PKT_TRAILER	8
 
 /*
@@ -194,7 +194,7 @@ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
 {
 	int i;
 	struct page **pages_wraparound;
-
+	print_hello();
 	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
 
 	/*
