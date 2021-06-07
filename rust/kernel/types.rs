@@ -54,7 +54,8 @@ impl<T> PointerWrapper for Box<T> {
     }
 
     unsafe fn from_pointer(ptr: *const c_types::c_void) -> Self {
-        Box::from_raw(ptr as _)
+        // SAFETY: The passed pointer comes from a previous call to [`Self::into_pointer()`].
+        unsafe { Box::from_raw(ptr as _) }
     }
 }
 
@@ -64,7 +65,8 @@ impl<T: RefCounted> PointerWrapper for Ref<T> {
     }
 
     unsafe fn from_pointer(ptr: *const c_types::c_void) -> Self {
-        Ref::from_raw(ptr as _)
+        // SAFETY: The passed pointer comes from a previous call to [`Self::into_pointer()`].
+        unsafe { Ref::from_raw(ptr as _) }
     }
 }
 
@@ -74,7 +76,8 @@ impl<T> PointerWrapper for Arc<T> {
     }
 
     unsafe fn from_pointer(ptr: *const c_types::c_void) -> Self {
-        Arc::from_raw(ptr as _)
+        // SAFETY: The passed pointer comes from a previous call to [`Self::into_pointer()`].
+        unsafe { Arc::from_raw(ptr as _) }
     }
 }
 
@@ -88,7 +91,8 @@ impl<T: PointerWrapper + Deref> PointerWrapper for Pin<T> {
 
     unsafe fn from_pointer(p: *const c_types::c_void) -> Self {
         // SAFETY: The object was originally pinned.
-        Pin::new_unchecked(T::from_pointer(p))
+        // The passed pointer comes from a previous call to `inner::into_pointer()`.
+        unsafe { Pin::new_unchecked(T::from_pointer(p)) }
     }
 }
 
@@ -101,6 +105,8 @@ impl<T: PointerWrapper + Deref> PointerWrapper for Pin<T> {
 /// In the example below, we have multiple exit paths and we want to log regardless of which one is
 /// taken:
 /// ```
+/// # use kernel::prelude::*;
+/// # use kernel::ScopeGuard;
 /// fn example1(arg: bool) {
 ///     let _log = ScopeGuard::new(|| pr_info!("example1 completed\n"));
 ///
@@ -115,6 +121,8 @@ impl<T: PointerWrapper + Deref> PointerWrapper for Pin<T> {
 /// In the example below, we want to log the same message on all early exits but a different one on
 /// the main exit path:
 /// ```
+/// # use kernel::prelude::*;
+/// # use kernel::ScopeGuard;
 /// fn example2(arg: bool) {
 ///     let log = ScopeGuard::new(|| pr_info!("example2 returned early\n"));
 ///

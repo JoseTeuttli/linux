@@ -98,11 +98,11 @@ impl Error {
 
 impl fmt::Debug for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        extern "C" {
+            fn rust_helper_errname(err: c_types::c_int) -> *const c_types::c_char;
+        }
         // SAFETY: FFI call.
-        #[cfg(CONFIG_SYMBOLIC_ERRNAME)]
-        let name = unsafe { crate::bindings::errname(-self.0) };
-        #[cfg(not(CONFIG_SYMBOLIC_ERRNAME))]
-        let name: *const c_types::c_char = core::ptr::null();
+        let name = unsafe { rust_helper_errname(-self.0) };
 
         if name.is_null() {
             // Print out number if no name can be found.
@@ -190,7 +190,10 @@ where
 ///
 /// # Examples
 ///
-/// ```rust,no_run
+/// ```ignore
+/// # use kernel::from_kernel_result;
+/// # use kernel::c_types;
+/// # use kernel::bindings;
 /// unsafe extern "C" fn probe_callback(
 ///     pdev: *mut bindings::platform_device,
 /// ) -> c_types::c_int {
@@ -219,7 +222,11 @@ macro_rules! from_kernel_result {
 ///
 /// # Examples
 ///
-/// ```rust,no_run
+/// ```ignore
+/// # use kernel::prelude::*;
+/// # use kernel::from_kernel_err_ptr;
+/// # use kernel::c_types;
+/// # use kernel::bindings;
 /// fn devm_platform_ioremap_resource(
 ///     pdev: &mut PlatformDevice,
 ///     index: u32,

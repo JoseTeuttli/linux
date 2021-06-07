@@ -19,7 +19,9 @@ pub type BStr = [u8];
 ///
 /// # Examples
 ///
-/// ```rust,no_run
+/// ```
+/// # use kernel::b_str;
+/// # use kernel::str::BStr;
 /// const MY_BSTR: &'static BStr = b_str!("My awesome BStr!");
 /// ```
 #[macro_export]
@@ -89,8 +91,14 @@ impl CStr {
     /// must not be mutated.
     #[inline]
     pub unsafe fn from_char_ptr<'a>(ptr: *const c_types::c_char) -> &'a Self {
-        let len = bindings::strlen(ptr) + 1;
-        Self::from_bytes_with_nul_unchecked(core::slice::from_raw_parts(ptr as _, len as _))
+        // SAFETY: The safety precondition guarantees `ptr` is a valid pointer
+        // to a `NUL`-terminated C string.
+        let len = unsafe { bindings::strlen(ptr) } + 1;
+        // SAFETY: Lifetime guaranteed by the safety precondition.
+        let bytes = unsafe { core::slice::from_raw_parts(ptr as _, len as _) };
+        // SAFETY: As `len` is returned by `strlen`, `bytes` does not contain interior `NUL`.
+        // As we have added 1 to `len`, the last byte is known to be `NUL`.
+        unsafe { Self::from_bytes_with_nul_unchecked(bytes) }
     }
 
     /// Creates a [`CStr`] from a `[u8]`.
@@ -144,7 +152,8 @@ impl CStr {
         // requires `ptr_metadata`).
         // While none of them are current stable, it is very likely that one of
         // them will eventually be.
-        &*(bytes as *const [u8] as *const Self)
+        // SAFETY: Properties of `bytes` guaranteed by the safety precondition.
+        unsafe { &*(bytes as *const [u8] as *const Self) }
     }
 
     /// Returns a C pointer to the string.
@@ -186,11 +195,10 @@ impl Index<ops::RangeFrom<usize>> for CStr {
     type Output = CStr;
 
     #[inline]
-    // Clippy false positive
-    #[allow(clippy::unnecessary_operation)]
     fn index(&self, index: ops::RangeFrom<usize>) -> &Self::Output {
         // Delegate bounds checking to slice.
-        &self.as_bytes()[index.start..];
+        // Assign to _ to mute clippy's unnecessary operation warning.
+        let _ = &self.as_bytes()[index.start..];
         // SAFETY: We just checked the bounds.
         unsafe { Self::from_bytes_with_nul_unchecked(&self.0[index.start..]) }
     }
@@ -236,7 +244,9 @@ where
 ///
 /// # Examples
 ///
-/// ```rust,no_run
+/// ```
+/// # use kernel::c_str;
+/// # use kernel::str::CStr;
 /// const MY_CSTR: &'static CStr = c_str!("My awesome CStr!");
 /// ```
 #[macro_export]
