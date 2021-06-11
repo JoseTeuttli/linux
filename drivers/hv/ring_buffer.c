@@ -72,7 +72,7 @@ static inline u32
 hv_get_next_write_location(struct hv_ring_buffer_info *ring_info)
 {
 	u32 next = ring_info->ring_buffer->write_index;
-
+	rust_hv_get_next_write_location(ring_info);
 	return next;
 }
 
