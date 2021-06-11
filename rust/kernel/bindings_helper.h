@@ -19,6 +19,7 @@
 #include <linux/of_platform.h>
 #include <linux/security.h>
 
+#include "linux/hyperv.h"
 // `bindgen` gets confused at certain things
 const gfp_t BINDINGS_GFP_KERNEL = GFP_KERNEL;
 const gfp_t BINDINGS___GFP_ZERO = __GFP_ZERO;
