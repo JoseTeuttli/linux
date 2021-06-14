@@ -68,21 +68,33 @@ static void hv_signal_on_write(u32 old_write, struct vmbus_channel *channel)
 }
 
 /* Get the next write location for the specified ring buffer. */
-static inline u32
-hv_get_next_write_location(struct hv_ring_buffer_info *ring_info)
-{
-	u32 next = ring_info->ring_buffer->write_index;
-	rust_hv_get_next_write_location(ring_info);
-	return next;
-}
+//commented out to test rust function
+// static inline u32
+// hv_get_next_write_location(struct hv_ring_buffer_info *ring_info)
+// {
+// 	u32 next = ring_info->ring_buffer->write_index;
+// 	rust_hv_get_next_write_location(ring_info);
+// 	return next;
+// }
 
 /* Set the next write location for the specified ring buffer. */
-static inline void
-hv_set_next_write_location(struct hv_ring_buffer_info *ring_info,
-		     u32 next_write_location)
-{
-	ring_info->ring_buffer->write_index = next_write_location;
-}
+//commented out to test rust function
+// static inline void
+// hv_set_next_write_location(struct hv_ring_buffer_info *ring_info,
+// 		     u32 next_write_location)
+// {
+// 	ring_info->ring_buffer->write_index = next_write_location;
+// }
+
+/* Set the next read location for the specified ring buffer. */
+//commented out to test rust function
+// static inline void
+// hv_set_next_read_location(struct hv_ring_buffer_info *ring_info,
+// 		    u32 next_read_location)
+// {
+// 	ring_info->ring_buffer->read_index = next_read_location;
+// 	ring_info->priv_read_index = next_read_location;
+// }
 
 /* Get the size of the ring buffer. */
 static inline u32
