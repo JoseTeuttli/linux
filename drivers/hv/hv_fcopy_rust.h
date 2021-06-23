@@ -1,0 +1,1 @@
+int hv_fcopy_init_rust(struct hv_util_service *srv);
