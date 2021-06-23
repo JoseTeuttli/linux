@@ -11,4 +11,4 @@ hv_vmbus-y := vmbus_drv.o \
 		 channel_mgmt.o ring_buffer.o hv_trace.o \
 		 rust_test.o
 hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
-hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_fcopy.o hv_utils_transport.o
+hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_fcopy.o hv_utils_transport.o hv_fcopy_rust.o

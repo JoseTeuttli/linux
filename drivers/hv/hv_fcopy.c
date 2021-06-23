@@ -18,6 +18,8 @@
 #include "hyperv_vmbus.h"
 #include "hv_utils_transport.h"
 
+#include "hv_fcopy_rust.h"
+
 #define WIN8_SRV_MAJOR		1
 #define WIN8_SRV_MINOR		1
 #define WIN8_SRV_VERSION	(WIN8_SRV_MAJOR << 16 | WIN8_SRV_MINOR)
@@ -347,6 +349,7 @@ static void fcopy_on_reset(void)
 
 int hv_fcopy_init(struct hv_util_service *srv)
 {
+	//hv_fcopy_init_rust();
 	recv_buffer = srv->recv_buffer;
 	fcopy_transaction.recv_channel = srv->channel;
 

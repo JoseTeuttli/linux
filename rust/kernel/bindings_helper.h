@@ -18,6 +18,8 @@
 #include <linux/platform_device.h>
 #include <linux/of_platform.h>
 #include "linux/hyperv.h"
+#include "../drivers/hv/hv_fcopy.h"
+//#include "linux/drivers/hv/hv_fcopy.c"
 // `bindgen` gets confused at certain things
 const gfp_t BINDINGS_GFP_KERNEL = GFP_KERNEL;
 const gfp_t BINDINGS___GFP_ZERO = __GFP_ZERO;

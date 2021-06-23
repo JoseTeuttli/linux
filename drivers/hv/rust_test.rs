@@ -10,6 +10,7 @@ const __LOG_PREFIX: &[u8] = b"rust_hv\0";
 #[no_mangle]
 pub extern "C" fn print_hello() -> () {
     pr_info!("Testing rust integration, testing, testing, 123");
+    pr_info!("test");
 }
 #[no_mangle]
 pub extern "C" fn rust_hv_get_next_write_location(ring_info: *mut hv_ring_buffer_info) -> c_types::c_uint {
