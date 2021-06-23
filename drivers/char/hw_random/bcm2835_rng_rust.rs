@@ -12,7 +12,7 @@ use kernel::{
     file_operations::{FileOpener, FileOperations},
     io_buffer::IoBufferWriter,
     miscdev,
-    of::OfMatchTable,
+    of::ConstOfMatchTable,
     platdev::PlatformDriver,
     prelude::*,
     {c_str, platdev},
@@ -37,7 +37,7 @@ impl FileOpener<()> for RngDevice {
 impl FileOperations for RngDevice {
     kernel::declare_file_operations!(read);
 
-    fn read<T: IoBufferWriter>(&self, _: &File, data: &mut T, offset: u64) -> Result<usize> {
+    fn read<T: IoBufferWriter>(_: &Self, _: &File, data: &mut T, offset: u64) -> Result<usize> {
         // Succeed if the caller doesn't provide a buffer or if not at the start.
         if data.is_empty() || offset != 0 {
             return Ok(0);
@@ -72,11 +72,12 @@ struct RngModule {
 
 impl KernelModule for RngModule {
     fn init() -> Result<Self> {
-        let of_match_tbl = OfMatchTable::new(&c_str!("brcm,bcm2835-rng"))?;
+        const OF_MATCH_TBL: ConstOfMatchTable<1> =
+            ConstOfMatchTable::new_const([&c_str!("brcm,bcm2835-rng")]);
 
         let pdev = platdev::Registration::new_pinned::<RngDriver>(
             c_str!("bcm2835-rng-rust"),
-            Some(of_match_tbl),
+            Some(&OF_MATCH_TBL),
             &THIS_MODULE,
         )?;
 
