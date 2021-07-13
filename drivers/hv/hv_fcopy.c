@@ -18,7 +18,9 @@
 #include "hyperv_vmbus.h"
 #include "hv_utils_transport.h"
 
+#include "hv_fcopy.h"
 #include "hv_fcopy_rust.h"
+#include "rust_test.h"
 
 #define WIN8_SRV_MAJOR		1
 #define WIN8_SRV_MINOR		1
@@ -48,52 +50,58 @@ static const int fw_versions[] = {
  * handled.
  */
 
-static struct {
-	int state;   /* hvutil_device_state */
-	int recv_len; /* number of bytes received. */
-	struct hv_fcopy_hdr  *fcopy_msg; /* current message */
-	struct vmbus_channel *recv_channel; /* chn we got the request */
-	u64 recv_req_id; /* request ID. */
-} fcopy_transaction;
+// static struct {
+// 	int state;   /* hvutil_device_state */
+// 	int recv_len; /* number of bytes received. */
+// 	struct hv_fcopy_hdr  *fcopy_msg; /* current message */
+// 	struct vmbus_channel *recv_channel; /* chn we got the request */
+// 	u64 recv_req_id; /* request ID. */
+// } fcopy_transaction;
+struct fcopy_transaction_struct fcopy_transaction;
 
-static void fcopy_respond_to_host(int error);
+void fcopy_respond_to_host(int error);
 static void fcopy_send_data(struct work_struct *dummy);
 static void fcopy_timeout_func(struct work_struct *dummy);
-static DECLARE_DELAYED_WORK(fcopy_timeout_work, fcopy_timeout_func);
-static DECLARE_WORK(fcopy_send_work, fcopy_send_data);
+DECLARE_DELAYED_WORK(fcopy_timeout_work, fcopy_timeout_func);
+DECLARE_WORK(fcopy_send_work, fcopy_send_data);
 static const char fcopy_devname[] = "vmbus/hv_fcopy";
-static u8 *recv_buffer;
-static struct hvutil_transport *hvt;
+u8 *recv_buffer;
+struct hvutil_transport *hvt;
 /*
  * This state maintains the version number registered by the daemon.
  */
 static int dm_reg_value;
 
-static void fcopy_poll_wrapper(void *channel)
+void fcopy_poll_wrapper(void *channel)
 {
+	fcopy_poll_wrapper_rust(channel);
 	/* Transaction is finished, reset the state here to avoid races. */
-	fcopy_transaction.state = HVUTIL_READY;
-	tasklet_schedule(&((struct vmbus_channel *)channel)->callback_event);
+	// fcopy_transaction.state = HVUTIL_READY;
+	// tasklet_schedule(&((struct vmbus_channel *)channel)->callback_event);
 }
 
 static void fcopy_timeout_func(struct work_struct *dummy)
 {
+	//not sure how to test since it doesn't get run
+	fcopy_timeout_func_rust();
 	/*
 	 * If the timer fires, the user-mode component has not responded;
 	 * process the pending transaction.
 	 */
-	fcopy_respond_to_host(HV_E_FAIL);
-	hv_poll_channel(fcopy_transaction.recv_channel, fcopy_poll_wrapper);
+	// fcopy_respond_to_host(HV_E_FAIL);
+	// hv_poll_channel(fcopy_transaction.recv_channel, fcopy_poll_wrapper);
 }
 
 static void fcopy_register_done(void)
 {
-	pr_debug("FCP: userspace daemon registered\n");
-	hv_poll_channel(fcopy_transaction.recv_channel, fcopy_poll_wrapper);
+	fcopy_register_done_rust();
+	// pr_debug("FCP: userspace daemon registered\n");
+	// hv_poll_channel(fcopy_transaction.recv_channel, fcopy_poll_wrapper);
 }
 
 static int fcopy_handle_handshake(u32 version)
 {
+	fcopy_handle_handshake_rust();
 	u32 our_ver = FCOPY_CURRENT_VERSION;
 
 	switch (version) {
@@ -123,6 +131,7 @@ static int fcopy_handle_handshake(u32 version)
 
 static void fcopy_send_data(struct work_struct *dummy)
 {
+	fcopy_send_data_rust();
 	struct hv_start_fcopy *smsg_out = NULL;
 	int operation = fcopy_transaction.fcopy_msg->operation;
 	struct hv_start_fcopy *smsg_in;
@@ -189,9 +198,10 @@ static void fcopy_send_data(struct work_struct *dummy)
  * Send a response back to the host.
  */
 
-static void
+void
 fcopy_respond_to_host(int error)
 {
+	fcopy_respond_to_host_rust();
 	struct icmsg_hdr *icmsghdr;
 	u32 buf_len;
 	struct vmbus_channel *channel;
@@ -227,6 +237,7 @@ fcopy_respond_to_host(int error)
 
 void hv_fcopy_onchannelcallback(void *context)
 {
+	hv_fcopy_onchannelcallback_rust();
 	struct vmbus_channel *channel = context;
 	u32 recvlen;
 	u64 requestid;
@@ -311,6 +322,7 @@ void hv_fcopy_onchannelcallback(void *context)
 /* Callback when data is received from userspace */
 static int fcopy_on_msg(void *msg, int len)
 {
+	fcopy_on_msg_rust();
 	int *val = (int *)msg;
 
 	if (len != sizeof(int))
@@ -338,6 +350,7 @@ static int fcopy_on_msg(void *msg, int len)
 
 static void fcopy_on_reset(void)
 {
+	fcopy_on_reset_rust();
 	/*
 	 * The daemon has exited; reset the state.
 	 */
@@ -349,7 +362,9 @@ static void fcopy_on_reset(void)
 
 int hv_fcopy_init(struct hv_util_service *srv)
 {
-	//hv_fcopy_init_rust();
+	//print_hello();
+	hv_fcopy_init_rust(srv, hvt, recv_buffer);
+
 	recv_buffer = srv->recv_buffer;
 	fcopy_transaction.recv_channel = srv->channel;
 
@@ -368,15 +383,22 @@ int hv_fcopy_init(struct hv_util_service *srv)
 
 	return 0;
 }
-
-static void hv_fcopy_cancel_work(void)
+//removed static from function below before void
+void hv_fcopy_cancel_work(void)
 {
-	cancel_delayed_work_sync(&fcopy_timeout_work);
-	cancel_work_sync(&fcopy_send_work);
+	//changed fcopy_timeout_work and fcopy_send_work to be extern variables
+	//added them to hv_fcopy.h so I could use them on the rust side as well
+	//feels very hacky
+	//also doesn't get run so not sure how to test this function
+	hv_fcopy_cancel_work_rust();
+	// cancel_delayed_work_sync(&fcopy_timeout_work);
+	// cancel_work_sync(&fcopy_send_work);
 }
 
 int hv_fcopy_pre_suspend(void)
 {
+	//not implemented
+	//hv_fcopy_pre_suspend_rust(&fcopy_transaction);
 	struct vmbus_channel *channel = fcopy_transaction.recv_channel;
 	struct hv_fcopy_hdr *fcopy_msg;
 
@@ -412,18 +434,21 @@ int hv_fcopy_pre_suspend(void)
 
 int hv_fcopy_pre_resume(void)
 {
-	struct vmbus_channel *channel = fcopy_transaction.recv_channel;
+	//function doesn't get run so not sure how to test
+	return hv_fcopy_pre_resume_rust();
+	// struct vmbus_channel *channel = fcopy_transaction.recv_channel;
 
-	tasklet_enable(&channel->callback_event);
+	// tasklet_enable(&channel->callback_event);
 
-	return 0;
 }
 
 void hv_fcopy_deinit(void)
 {
-	fcopy_transaction.state = HVUTIL_DEVICE_DYING;
+	//function doesn't get run so not sure how to test
+	hv_fcopy_deinit_rust(hvt);
+	// fcopy_transaction.state = HVUTIL_DEVICE_DYING;
 
-	hv_fcopy_cancel_work();
+	// hv_fcopy_cancel_work();
 
-	hvutil_transport_destroy(hvt);
+	// hvutil_transport_destroy(hvt);
 }

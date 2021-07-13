@@ -8,3 +8,6 @@ static struct fcopy_transaction_struct{
 	struct vmbus_channel *recv_channel; /* chn we got the request */
 	u64 recv_req_id; /* request ID. */
 };
+extern struct delayed_work fcopy_timeout_work;
+extern struct work_struct fcopy_send_work;
+extern struct fcopy_transaction_struct fcopy_transaction;

@@ -1,2 +1,14 @@
-void hv_fcopy_init_rust(void);
-void hv_fcopy_deinit_rust(void);
+void fcopy_poll_wrapper_rust(void* channel);
+void fcopy_timeout_func_rust(void);
+void fcopy_register_done_rust(void);
+void fcopy_handle_handshake_rust(void);
+void fcopy_send_data_rust(void);
+void fcopy_respond_to_host_rust(void);
+void hv_fcopy_onchannelcallback_rust(void);
+void fcopy_on_msg_rust(void);
+void fcopy_on_reset_rust(void);
+void hv_fcopy_deinit_rust(struct hvutil_transport *hvt);
+void hv_fcopy_cancel_work_rust(void);
+int hv_fcopy_pre_suspend_rust(void);
+int hv_fcopy_pre_resume_rust(void);
+void hv_fcopy_init_rust(struct hv_util_service *srv, struct hvutil_transport *hvt, u8 *recv_buffer);

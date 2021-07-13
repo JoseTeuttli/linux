@@ -68,7 +68,7 @@ static void hv_signal_on_write(u32 old_write, struct vmbus_channel *channel)
 }
 
 /* Get the next write location for the specified ring buffer. */
-//commented out to test rust function
+// commented out to test rust function
 // static inline u32
 // hv_get_next_write_location(struct hv_ring_buffer_info *ring_info)
 // {
@@ -197,7 +197,7 @@ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
 {
 	int i;
 	struct page **pages_wraparound;
-	print_hello();
+	//print_hello();
 	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
 
 	/*

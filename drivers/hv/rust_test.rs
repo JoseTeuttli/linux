@@ -14,7 +14,7 @@ pub extern "C" fn print_hello() -> () {
 }
 #[no_mangle]
 pub extern "C" fn rust_hv_get_next_write_location(ring_info: *mut hv_ring_buffer_info) -> c_types::c_uint {
-    print_hello();
+    //print_hello();
     unsafe {
     pr_info!("Trying to read from passed data structure got int: {}", (*(*ring_info).ring_buffer).write_index);
     (*(*ring_info).ring_buffer).write_index
