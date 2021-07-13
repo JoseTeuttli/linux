@@ -18,9 +18,13 @@
 #include "hyperv_vmbus.h"
 #include "hv_utils_transport.h"
 
+<<<<<<< HEAD
 #include "hv_fcopy.h"
 #include "hv_fcopy_rust.h"
 #include "rust_test.h"
+=======
+#include "hv_fcopy_rust.h"
+>>>>>>> ba75e468f3bb97d0cfe5b025b680a05dbbd0a91d
 
 #define WIN8_SRV_MAJOR		1
 #define WIN8_SRV_MINOR		1
