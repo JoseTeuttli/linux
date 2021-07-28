@@ -11,3 +11,9 @@ static struct fcopy_transaction_struct{
 extern struct delayed_work fcopy_timeout_work;
 extern struct work_struct fcopy_send_work;
 extern struct fcopy_transaction_struct fcopy_transaction;
+extern int dm_reg_value;
+extern struct hvutil_transport *hvt;
+extern u8 *recv_buffer;
+extern char fcopy_devname[14];
+#define FCOPY_VER_COUNT 1
+#define FW_VER_COUNT 1

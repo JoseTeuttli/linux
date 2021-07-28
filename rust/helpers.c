@@ -241,12 +241,43 @@ void tasklet_schedule(struct tasklet_struct *t)
 	if (!test_and_set_bit(TASKLET_STATE_SCHED, &t->state))
 		__tasklet_schedule(t);
 }
+void tasklet_unlock_wait(struct tasklet_struct *t);
+void tasklet_disable_nosync(struct tasklet_struct *t)
+{
+	atomic_inc(&t->count);
+	smp_mb__after_atomic();
+}
+void tasklet_disable(struct tasklet_struct *t)
+{
+	tasklet_disable_nosync(t);
+	tasklet_unlock_wait(t);
+	smp_mb();
+}
 void hv_poll_channel(struct vmbus_channel *channel,
 				   void (*cb)(void *))
 {
 	if (!channel)
 		return;
 	cb(channel);
+}
+void *kzalloc_fn(size_t size, gfp_t flags)
+{
+	return kmalloc(size, flags | __GFP_ZERO);
+}
+bool schedule_work_rust(struct work_struct *work)
+{
+	return queue_work(system_wq, work);
+}
+// void kfree(void *p)
+// {
+// 	if (p >= __kfree_ignore_start && p < __kfree_ignore_end)
+// 		return;
+// 	free(p);
+// }
+bool schedule_delayed_work_rust(struct delayed_work *dwork,
+					 unsigned long delay)
+{
+	return queue_delayed_work(system_wq, dwork, delay);
 }
 /* We use bindgen's --size_t-is-usize option to bind the C size_t type
  * as the Rust usize type, so we can use it in contexts where Rust
