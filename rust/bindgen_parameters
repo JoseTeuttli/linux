@@ -22,7 +22,7 @@
 --opaque-type hv_nested_enlightenments_control
 --opaque-type hv_input_map_device_interrupt
 --opaque-type hv_retarget_device_interrupt
-
+--opaque-type hv_ring_buffer
 
 # `seccomp`'s comment gets understood as a doctest
 --no-doc-comments

@@ -17,34 +17,35 @@ pub extern "C" fn rust_hv_get_next_write_location(ring_info: *mut hv_ring_buffer
     //print_hello();
     unsafe {
     //pr_info!("Trying to read from passed data structure got int: {}", (*(*ring_info).ring_buffer).write_index);
-    (*(*ring_info).ring_buffer).write_index
+    //(*(*ring_info).ring_buffer).write_index
     }
+    0
 }
-#[no_mangle]
-pub extern "C" fn hv_get_next_write_location(ring_info: *mut hv_ring_buffer_info) -> c_types::c_uint {
+//#[no_mangle]
+//pub extern "C" fn hv_get_next_write_location(ring_info: *mut hv_ring_buffer_info) -> c_types::c_uint {
     //pr_info!("Running Rust hv_get_next_write_location");
-    unsafe {
-    (*(*ring_info).ring_buffer).write_index
-    }
-}
+//    unsafe {
+    //(*(*ring_info).ring_buffer).write_index
+//    }
+//}
 
-#[no_mangle]
-pub extern "C" fn hv_set_next_write_location(ring_info: *mut hv_ring_buffer_info, next_write_location: c_types::c_uint) -> () {
+//#[no_mangle]
+//pub extern "C" fn hv_set_next_write_location(ring_info: *mut hv_ring_buffer_info, next_write_location: c_types::c_uint) -> () {
     //pr_info!("Running Rust hv_set_next_write_location");
-    unsafe {
-    (*(*ring_info).ring_buffer).write_index = next_write_location;
-    }
-    ()
-}
+//    unsafe {
+    //(*(*ring_info).ring_buffer).write_index = next_write_location;
+//    }
+//    ()
+//}
 
-#[no_mangle]
-pub extern "C" fn hv_set_next_read_location(ring_info: *mut hv_ring_buffer_info, next_read_location: c_types::c_uint) -> () {
+//#[no_mangle]
+//pub extern "C" fn hv_set_next_read_location(ring_info: *mut hv_ring_buffer_info, next_read_location: c_types::c_uint) -> () {
     //pr_info!("Running Rust hv_set_next_read_location");
-    unsafe {
-        (*(*ring_info).ring_buffer).read_index = next_read_location;
-        (*ring_info).priv_read_index = next_read_location;
-    }
-}
+//    unsafe {
+        //(*(*ring_info).ring_buffer).read_index = next_read_location;
+        //(*ring_info).priv_read_index = next_read_location;
+//    }
+//}
 
 //function below currently not working due to not knowing how to best either use the macro on the c side or copy it over to the rust side WIP
 // #[no_mangle]
