@@ -12,15 +12,15 @@ pub extern "C" fn print_hello() -> () {
     //pr_info!("Testing rust integration, testing, testing, 123");
     //pr_info!("test");
 }
-#[no_mangle]
-pub extern "C" fn rust_hv_get_next_write_location(ring_info: *mut hv_ring_buffer_info) -> c_types::c_uint {
+//#[no_mangle]
+//pub extern "C" fn rust_hv_get_next_write_location(ring_info: *mut hv_ring_buffer_info) -> c_types::c_uint {
     //print_hello();
-    unsafe {
+    //unsafe {
     //pr_info!("Trying to read from passed data structure got int: {}", (*(*ring_info).ring_buffer).write_index);
     //(*(*ring_info).ring_buffer).write_index
-    }
-    0
-}
+    //}
+    //0
+//}
 //#[no_mangle]
 //pub extern "C" fn hv_get_next_write_location(ring_info: *mut hv_ring_buffer_info) -> c_types::c_uint {
     //pr_info!("Running Rust hv_get_next_write_location");

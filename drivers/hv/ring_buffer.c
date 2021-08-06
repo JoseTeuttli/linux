@@ -69,7 +69,7 @@ static void hv_signal_on_write(u32 old_write, struct vmbus_channel *channel)
 
 /* Get the next write location for the specified ring buffer. */
 // commented out to test rust function
-inline u32
+static inline u32
 hv_get_next_write_location(struct hv_ring_buffer_info *ring_info)
 {
 	u32 next = ring_info->ring_buffer->write_index;
@@ -79,7 +79,7 @@ hv_get_next_write_location(struct hv_ring_buffer_info *ring_info)
 
 /* Set the next write location for the specified ring buffer. */
 //commented out to test rust function
-inline void
+static inline void
 hv_set_next_write_location(struct hv_ring_buffer_info *ring_info,
 		     u32 next_write_location)
 {
@@ -88,7 +88,7 @@ hv_set_next_write_location(struct hv_ring_buffer_info *ring_info,
 
 /* Set the next read location for the specified ring buffer. */
 //commented out to test rust function
-inline void
+static inline void
 hv_set_next_read_location(struct hv_ring_buffer_info *ring_info,
 		    u32 next_read_location)
 {
